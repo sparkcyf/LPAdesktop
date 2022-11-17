@@ -1,0 +1,31 @@
+name: build LPADesktop
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: install depdency
+      run: sudo apt update && sudo apt-get -y install zip 
+    
+    - name: docker-compose
+      run: docker-compose up
+      
+    - name: zip artifacts
+      run: zip lpadesktop.zip -r target
+      
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: lpad
+        name: ${{ github.sha }}
+        files: lpadesktop.zip
+      
